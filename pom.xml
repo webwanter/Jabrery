@@ -17,6 +17,7 @@
         <junit.version>5.13.2</junit.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <hikaricp.version>6.2.1</hikaricp.version>
+        <postgres.version>42.7.7</postgres.version>
     </properties>
 
     <dependencies>
@@ -64,6 +65,13 @@
             <artifactId>mapstruct-processor</artifactId>
             <version>${mapstruct.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <!-- Source: https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgres.version}</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

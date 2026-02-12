@@ -4,11 +4,11 @@ services:
   # ---------- PostgreSQL 16 ----------
   postgres:
     image: postgres:16
-    container_name: library_postgres
+    container_name: library_db
     environment:
-      POSTGRES_USER: library_user
-      POSTGRES_PASSWORD: library_pass
-      POSTGRES_DB: library_db
+      POSTGRES_USER: library_admin
+      POSTGRES_PASSWORD: securepass123
+      POSTGRES_DB: library
     ports:
       - "5432:5432"
     volumes:
@@ -37,9 +37,9 @@ services:
       # Переменные для подключения к БД (можно читать из .env)
       - DB_HOST=postgres
       - DB_PORT=5432
-      - DB_NAME=library_db
-      - DB_USER=library_user
-      - DB_PASSWORD=library_pass
+      - DB_NAME=library
+      - DB_USER=library_admin
+      - DB_PASSWORD=securepass123
     depends_on:
       postgres:
         condition: service_healthy
