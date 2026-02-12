@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # ---------- PostgreSQL 16 ----------
+  postgres:
+    image: postgres:16
+    container_name: library_postgres
+    environment:
+      POSTGRES_USER: library_user
+      POSTGRES_PASSWORD: library_pass
+      POSTGRES_DB: library_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U library_user -d library_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_network
+
+  tomcat:
+    image: tomcat:10.1-jdk21   # Официальный образ: Tomcat 10.1 + JDK 21
+    container_name: library_tomcat
+    ports:
+      - "8080:8080"
+    volumes:
+      # Монтируем WAR-файл (переименованный в ROOT.war) — при изменении перезаливается автоматом
+      - ./target/your-app.war:/usr/local/tomcat/webapps/ROOT.war
+      # Опционально: свои логи
+      - ./logs:/usr/local/tomcat/logs
+    environment:
+      - JAVA_OPTS=-Duser.timezone=Europe/Moscow -Xmx512m
+      # Переменные для подключения к БД (можно читать из .env)
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=library_db
+      - DB_USER=library_user
+      - DB_PASSWORD=library_pass
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app_network
+
+volumes:
+  pg_data:
+    name: library_pg_data
+
+networks:
+  app_network:
+    name: library_network
+    driver: bridge
