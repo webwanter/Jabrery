@@ -1,12 +1,12 @@
 -- =====================================================
--- ПОЛНЫЙ СКРИПТ БИБЛИОТЕКИ (МОЖНО ЗАПУСКАТЬ МНОГО РАЗ)
+-- COMPLETE LIBRARY SCRIPT (CAN BE RUN MULTIPLE TIMES)
 -- =====================================================
 
--- ОТКЛЮЧАЕМ ПРОВЕРКУ ВНЕШНИХ КЛЮЧЕЙ
+-- DISABLE FOREIGN KEY CHECKS
 SET session_replication_role = 'replica';
 
 -- =====================================================
--- УДАЛЯЕМ ВСЕ ТАБЛИЦЫ (ЕСЛИ СУЩЕСТВУЮТ)
+-- DROP ALL TABLES (IF EXIST)
 -- =====================================================
 DROP TABLE IF EXISTS rental_history CASCADE;
 DROP TABLE IF EXISTS rentals CASCADE;
@@ -15,21 +15,21 @@ DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS authors CASCADE;
 DROP TABLE IF EXISTS genres CASCADE;
 
--- ВКЛЮЧАЕМ ПРОВЕРКУ ВНЕШНИХ КЛЮЧЕЙ
+-- ENABLE FOREIGN KEY CHECKS
 SET session_replication_role = 'origin';
 
 -- =====================================================
--- СОЗДАНИЕ ТАБЛИЦ
+-- CREATE TABLES
 -- =====================================================
 
--- 1. ЖАНРЫ
+-- 1. GENRES
 CREATE TABLE genres (
                         id SERIAL PRIMARY KEY,
                         title VARCHAR(100) NOT NULL UNIQUE,
                         description TEXT
 );
 
--- 2. АВТОРЫ
+-- 2. AUTHORS
 CREATE TABLE authors (
                          id SERIAL PRIMARY KEY,
                          full_name VARCHAR(200) NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE authors (
                          country VARCHAR(100)
 );
 
--- 3. КНИГИ
+-- 3. BOOKS
 CREATE TABLE books (
                        id SERIAL PRIMARY KEY,
                        title VARCHAR(255) NOT NULL,
@@ -49,7 +49,7 @@ CREATE TABLE books (
                        available_copies INTEGER DEFAULT 1 CHECK (available_copies >= 0)
 );
 
--- 4. ПОЛЬЗОВАТЕЛИ
+-- 4. USERS
 CREATE TABLE users (
                        id SERIAL PRIMARY KEY,
                        name VARCHAR(200) NOT NULL,
@@ -59,7 +59,7 @@ CREATE TABLE users (
                        registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 5. АРЕНДА
+-- 5. RENTALS
 CREATE TABLE rentals (
                          id SERIAL PRIMARY KEY,
                          user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -70,7 +70,7 @@ CREATE TABLE rentals (
                          status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'returned', 'overdue'))
 );
 
--- 6. ИСТОРИЯ АРЕНД
+-- 6. RENTAL HISTORY
 CREATE TABLE rental_history (
                                 id SERIAL PRIMARY KEY,
                                 user_id INTEGER NOT NULL REFERENCES users(id),
@@ -80,7 +80,7 @@ CREATE TABLE rental_history (
 );
 
 -- =====================================================
--- ИНДЕКСЫ
+-- INDEXES
 -- =====================================================
 CREATE INDEX idx_books_title ON books(title);
 CREATE INDEX idx_books_genre ON books(genre_id);
